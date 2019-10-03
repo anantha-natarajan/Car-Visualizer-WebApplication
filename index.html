@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>Car Visualizing three.js app</title>
+		<style>
+			@import  url(https://fonts.googleapis.com/css?family=Montserrat);
+			
+			body {
+				font-family: Monospace;
+				background-color: #000;
+				color: #000;
+				margin: 0px;
+				overflow: hidden;
+			}
+			canvas { width: 100%; height: 100% }
+			
+			.btn{
+			  box-sizing: border-box;
+			  height: 50px;
+			  width: 200px;
+			  display: table;
+			  font-size: 20px;
+			  font-weight: bold;
+			  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.55);
+			  transition: background .5s;
+			  cursor: pointer;
+			  display: table-cell;
+			  vertical-align: middle;
+			  text-align:center;
+			}
+			
+			.txt{
+				padding-top:5px;
+				color: black;
+			}
+			
+			li{
+				 box-sizing: border-box;
+			  height: 35px;
+			  width: 150px;
+			  display: table;
+			  font-size: 20px;
+			  font-weight: bold;
+			  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.55);
+			  background:white;
+			  transition: background .5s;
+			  cursor: pointer;
+			  display: table-cell;
+			  vertical-align: middle;
+			  text-align:center;
+			}
+			
+
+			li:hover{
+			  cursor:pointer;
+			}
+
+			.dropdown{
+			  z-index:-1;
+			  position:absolute;
+			  visibility: hidden;
+			  opacity:0;
+			  color:black;
+			  background:#e1e6ea;
+			  width:150px;
+			  margin-top:20px;
+			  
+			  transition:all 0.3s ease;
+			  
+			  transform:translateY(15px);
+			  cursor: default;
+			}
+
+			li:hover > .dropdown{
+			  z-index:1;
+			  opacity:1;
+			  visibility: visible;
+			  transform:translateY(0px);
+			}
+
+			
+			.down {
+			  transform: rotate(45deg);
+			  -webkit-transform: rotate(45deg);
+			}
+			.drop-link{
+			  display:block;
+			  text-align:left;
+			  text-decoration:none;
+			  font-size:15px;
+			  padding:10px 15px;
+			  transition:all 0.3s ease;
+			  color:#000;
+			}
+			
+			.drop-link:hover{
+			  font-size:16px;
+			  background: #d4dade;
+			}
+			
+			.texture{
+				cursor:pointer;
+			}
+			
+			.audiobtn{
+				box-sizing: border-box;
+			  height: 20px;
+			  width: 300px;
+			  display: table;
+			  font-size: 12px;
+			  font-weight: bold;
+			  cursor: pointer;
+			  display: table-cell;
+			  vertical-align: middle;
+			  text-align:center;
+			  border-radius:20px;
+			  background:white;
+			  margin:0px;
+			}
+			
+			.switch {
+			  position: relative;
+			  display: inline-block;
+			  width: 60px;
+			  height: 34px;
+			}
+
+			/* Hide default HTML checkbox */
+			.switch input {
+			  opacity: 0;
+			  width: 0;
+			  height: 0;
+			}
+
+			/* The slider */
+			.slider {
+			  position: absolute;
+			  cursor: pointer;
+			  top: 0;
+			  left: 0;
+			  right: 0;
+			  bottom: 0;
+			  background-color: #ccc;
+			  -webkit-transition: .4s;
+			  transition: .4s;
+			}
+
+			.slider:before {
+			  position: absolute;
+			  content: "";
+			  height: 26px;
+			  width: 26px;
+			  left: 4px;
+			  bottom: 4px;
+			  background-color: white;
+			  -webkit-transition: .4s;
+			  transition: .4s;
+			}
+
+			input:checked + .slider {
+			  background-color: #2196F3;
+			}
+
+			input:focus + .slider {
+			  box-shadow: 0 0 1px #2196F3;
+			}
+
+			input:checked + .slider:before {
+			  -webkit-transform: translateX(26px);
+			  -ms-transform: translateX(26px);
+			  transform: translateX(26px);
+			}
+
+			.slider2 {
+			  position: absolute;
+			  cursor: pointer;
+			  top: 0;
+			  left: 0;
+			  right: 0;
+			  bottom: 0;
+			  background-color: #ccc;
+			  -webkit-transition: .4s;
+			  transition: .4s;
+			}
+
+			.slider2:before {
+			  position: absolute;
+			  content: "";
+			  height: 26px;
+			  width: 26px;
+			  left: 4px;
+			  bottom: 4px;
+			  background-color: white;
+			  -webkit-transition: .4s;
+			  transition: .4s;
+			}
+
+			input:checked + .slider2 {
+			  background-color: #2196F3;
+			}
+
+			input:focus + .slider2 {
+			  box-shadow: 0 0 1px #2196F3;
+			}
+
+			input:checked + .slider2:before {
+			  -webkit-transform: translateX(26px);
+			  -ms-transform: translateX(26px);
+			  transform: translateX(26px);
+			}
+			
+			.opt{
+				width:150px;
+				height:25px;
+				background:white;
+				padding-top:8px;
+				font-size: 16px;
+			  font-weight: bold;
+			  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.55);
+			  cursor: pointer;
+			  vertical-align:middle;
+			  text-align:center;
+			}
+			
+			.opt2{
+				width:150px;
+				height:25px;
+				background:white;
+				padding-top:8px;
+				font-size: 16px;
+			  font-weight: bold;
+			  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.55);
+			  cursor: pointer;
+			  vertical-align:middle;
+			  text-align:center;
+			}
+			</style>
+		<link rel="stylesheet" href="color.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+		<script src="three.js-master/build/three.min.js"></script>
+		<script src="three.js-master/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="three.js-master/examples/js/loaders/DRACOLoader.js"></script>
+		<script src="three.js-master/examples/js/controls/OrbitControls.js"></script>
+		<script src="three.js-master/examples/js/pmrem/PMREMGenerator.js"></script>
+		<script src="three.js-master/examples/js/pmrem/PMREMCubeUVPacker.js"></script>
+		
+		
+		<script src="three.js-master/examples/js/WebGL.js"></script>
+		<script src="three.js-master/examples/js/libs/stats.min.js"></script>
+		
+	</head>
+	<body>
+		<!--<div  class="bodycolor" style="position:absolute;z-index=1;top:40px;left:40px;">
+			<img src="img/_0000_Menu_Color.png"  >
+		</div>-->
+		<div style="position:absolute;z-index=4;top:35px;left:700px;">
+			<img src="img/floor3.jpg" class ="texture" data-texture ="1">
+			<img src="img/floor2.jpg" class ="texture" data-texture ="2">
+			<img src="img/floor1.jpg" class ="texture" data-texture ="3">
+		</div>
+		<div class="color-wrapper" style="position:absolute;z-index=1;top:10px;left:100px;" id ="colorpicker">
+			<div style = "width:148px" class="btn txt color-holder-body call-picker-body">BODY COLOR</div>
+			<div class="color-picker body-color" id="color-picker_body" style="display: none"></div>
+		</div>
+		<div class="color-wrapper" style="position:absolute;z-index=1;top:10px;left:310px;" id ="colorpicker">
+			<div style = "width:148px" class="btn txt color-holder-rim call-picker-rim">RIM COLOR</div>
+			<div class="color-picker rim-color" id="color-picker_rim" style="display: none"></div>
+		</div>
+		<div style="position:absolute;z-index=1;top:10px;right:100px;width:150px" class="color-wrapper">
+			<li>WINDOWS 
+			<div class='dropdown'>
+				<option class='drop-link window' href='#' value="transparent" >Transparent</option>
+				<option class='drop-link window' href='#' value="tinted">Blue Tinted</option>
+				<option class='drop-link window' href='#' value="black">Black Opaque</option>
+			</div>
+			</li>
+		</div>
+		<div style="position:absolute;z-index=1;top:10px;right:310px;width:150px" class="color-wrapper">
+			<li>ENV-MAPS
+			<div class='dropdown'>
+				<option class='drop-link env' href='#' value="sky" >Style #1</option>
+				<option class='drop-link env' href='#' value="burn">Style #2</option>
+				<option class='drop-link env' href='#' value="bright">Style #3</option>
+			</div>
+			</li>
+		</div>
+		<div style="position:absolute;z-index=1;bottom:40px;left:40px;">
+			  <input type="file" id="rll" class = "audiobtn"/>
+			
+		</div>
+		<div style="position:absolute;z-index=1;bottom:80px;left:40px;">
+			<audio id="rllly" controls autoplay>
+			  <source src="" id="rlly" />
+			</audio>
+
+		</div>
+		<div style="position:absolute;z-index=1;bottom:40px;right:100px;" class="opt">
+			<label >ORBIT CONTROLS<label>
+		</div>
+		<div style="position:absolute;z-index=1;bottom:40px;right:40px;">
+			<label class="switch">
+			  <input type="checkbox">
+			  <span class="slider"></span>
+			</label>
+		</div>
+		<div style="position:absolute;z-index=1;bottom:100px;right:100px;" class="opt2">
+			<label >ANIMATE SHOWCASE<label>
+		</div>
+		<div style="position:absolute;z-index=1;bottom:100px;right:40px;">
+			<label class="switch">
+			  <input type="checkbox">
+			  <span class="slider2"></span>
+			</label>
+		</div>
+		<div style="position:absolute;z-index=4;bottom:40px;left:700px;">
+			<img src="img/_0003_Nav_Bar.png">
+		</div>
+		<!--<div style="position:absolute;z-index=1;bottom:100px;right:630px;">
+			<img src="img/_0004_Body.png">
+		</div>
+		<div style="position:absolute;z-index=1;bottom:100px;right:570px;">
+			<img src="img/_0005_Rim.png">
+		</div>-->
+		<div id="container"></div>
+		<script>
+			//JS TO ANIMATE
+			var animateControls = 0;
+			$('.slider2').click(function () {
+				console.log('its happening');
+				if(animateControls == 0){
+					animateControls = 1;
+					}
+				else{
+					animateControls = 0;
+					}
+			});
+			
+		
+			//JS for toggle
+			var orbitalControls = 0;
+			$('.slider').click(function () {
+				console.log('its happening');
+				if(orbitalControls == 0){
+					enableOrbitalControls();
+					orbitalControls = 1;
+					}
+				else{
+					disableOrbitalControls();
+					orbitalControls = 0;
+					}
+			});
+			
+			
+			//JS for playing audio files
+			function handleFiles(event) {
+				var files = event.target.files;
+				$("#rlly").attr("src", URL.createObjectURL(files[0]));
+				document.getElementById("rllly").load();
+			}
+
+			document.getElementById("rll").addEventListener("change", handleFiles, false);
+
+			//JS for color picker
+			var colorList = [ '000000', '993300', '333300', '003300', '003366', '000066', '333399', '333333', 
+			'660000', 'FF6633', '666633', '336633', '336666', '0066FF', '666699', '666666', 'CC3333', 'FF9933', '99CC33', '669966', '66CCCC', '3366FF', '663366', '999999', 'CC66FF', 'FFCC33', 'FFFF66', '99FF66', '99CCCC', '66CCFF', '993366', 'CCCCCC', 'FF99CC', 'FFCC99', 'FFFF99', 'CCffCC', 'CCFFff', '99CCFF', 'CC99FF', 'FFFFFF' ];
+			var bodypicker = $('#color-picker_body');
+			var rimpicker = $('#color-picker_rim');
+			
+			var bodyHex = "000000", rimHex = "000000";
+
+			for (var i = 0; i < colorList.length; i++ ) {
+				bodypicker.append('<li class="color-item" data-hex="' + '#' + colorList[i] + '" style="background-color:' + '#' + colorList[i] + ';"></li>');
+				rimpicker.append('<li class="color-item" data-hex="' + '#' + colorList[i] + '" style="background-color:' + '#' + colorList[i] + ';"></li>');
+			}
+
+			$('body').click(function () {
+				bodypicker.fadeOut();
+				rimpicker.fadeOut();
+			});
+
+			$('.call-picker-body').click(function(event) {
+				event.stopPropagation();
+				bodypicker.fadeIn();
+				bodypicker.children('li').hover(function() {
+					var codeHex = $(this).data('hex');
+					bodyHex = codeHex;
+					$('.color-holder-body').css('background-color', codeHex);
+					//$('#pickcolor').val(codeHex);
+					updateBody();
+				});
+			});
+			
+			
+			$('.call-picker-rim').click(function(event) {
+				event.stopPropagation();
+				rimpicker.fadeIn();
+				rimpicker.children('li').hover(function() {
+					var codeHex = $(this).data('hex');
+					rimHex = codeHex;
+					$('.color-holder-rim').css('background-color', codeHex);
+					$('#pickcolor').val(codeHex);
+					updateRim();
+				});
+			});
+			
+			//JS for window tint
+			var windowType = 3;
+			$('.window').click(function (event) {
+				event.stopPropagation();
+				var c = $(event.target).text();
+				if( c == "Transparent"){
+					windowType = 1;
+				} else if( c == "Blue Tinted"){
+					windowType = 2;
+				} else {
+					windowType = 3;
+				}
+				console.log("window type is " + windowType);
+				updateWindow();
+			});
+			
+			var envType = 1;
+			$('.env').click(function (event) {
+				event.stopPropagation();
+				var c = $(event.target).text();
+				if( c == "Style #1"){
+					envType = 1;
+				} else if( c == "Style #2"){
+					envType = 2;
+				} else {
+					envType = 3;
+				}
+				console.log("environment number is" + envType);
+				updateEnvironmentMap();
+			});
+			
+			//JS for ground texture
+			
+			var floorTexture = 2;
+			$('.texture').click(function (event) {
+				event.stopPropagation();
+				floorTexture = $(event.target).data('texture'); 
+				console.log(floorTexture);
+				updateGround();
+			});
+			
+			
+			// Our Javascript will go here.
+			var container = document.getElementById( 'container' );
+			var renderer,scene,camera,envMap, envMapOne,stats;
+			var carParts = {
+				body: [],
+				rims:[],
+				glass: [],
+			};
+			
+			
+			//CAMERA
+			camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			camera.position.set( 0,1, 5 );
+			//camera.position.set( 0,50, 0 );
+			
+			camera.lookAt(0,0.5,0);
+			
+			
+			//console.log(window.innerWidth);
+			//console.log(window.innerHeight);
+			//camera.rotation.y = 10;
+			var controls;
+			function enableOrbitalControls(){
+			console.log('enable is called');
+				controls = new THREE.OrbitControls( camera );
+				controls.update();
+				//Controls
+				controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+				controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+				controls.dampingFactor = 0.25;
+				controls.screenSpacePanning = false;
+				controls.minDistance = 1;
+				controls.maxDistance = 5;
+				controls.maxPolarAngle = Math.PI / 2;
+				controls.autoRotate = false;
+				controls.enabled = true;
+			}
+			
+			function disableOrbitalControls(){
+				console.log('disable is called');
+				controls.enabled = false;
+				camera.position.set( 0,1, 5 );
+				camera.lookAt(0,0.5,0);
+			}
+			//SCENE
+			scene = new THREE.Scene();
+			
+			updateGround();
+			
+			//scene.fog = new THREE.Fog( 0xd7cbb1, 1, 80 );
+			//LIGHTS
+			var light = new THREE.AmbientLight(0xffffff, 1);
+			light.lookAt(0,0,0);
+			scene.add(light);
+			var light2 = new THREE.PointLight(0xffffff, 0.5);
+			scene.add(light2);
+			
+			/*var onProgress = function( xhr ) {
+			console.log("nandhu22");
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log("nandhu");
+					console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
+				}
+			};
+			*/
+				var urls = [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ];
+				var envloader = new THREE.CubeTextureLoader().setPath( '/img/envTexture/Bright/');
+				envloader.load( urls, function ( texture ) {
+					scene.background = texture;
+					var pmremGenerator = new THREE.PMREMGenerator( texture );
+					pmremGenerator.update( renderer );
+					var pmremCubeUVPacker = new THREE.PMREMCubeUVPacker( pmremGenerator.cubeLods );
+					pmremCubeUVPacker.update( renderer );
+					envMapOne = pmremCubeUVPacker.CubeUVRenderTarget.texture;
+					pmremGenerator.dispose();
+					pmremCubeUVPacker.dispose();
+					
+					//initMaterials();
+					//initMaterialSelectionMenus();
+				} );
+				
+				var urls2 = [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ];
+				var envurl;
+				if(envType == 1)
+					envurl = '/img/envTexture/burn2/';
+				else if( envType == 2)
+					envurl = '/img/envTexture/Bright/';
+				else
+					envurl = '/img/envTexture/park/';
+				var env2loader = new THREE.CubeTextureLoader().setPath( envurl );
+				env2loader.load( urls2, function ( texture ) {
+					var pmremGenerator = new THREE.PMREMGenerator( texture );
+					pmremGenerator.update( renderer );
+					var pmremCubeUVPacker = new THREE.PMREMCubeUVPacker( pmremGenerator.cubeLods );
+					pmremCubeUVPacker.update( renderer );
+					envMap = pmremCubeUVPacker.CubeUVRenderTarget.texture;
+					pmremGenerator.dispose();
+					pmremCubeUVPacker.dispose();
+					initCar();
+				} );
+				
+				console.log(envurl);
+				console.log(envType);
+				console.log("I am outisde" + envMap);
+				
+				
+				var grid = new THREE.GridHelper( 400, 40, 0x000000, 0x000000 );
+				grid.material.opacity = 0.2;
+				grid.material.depthWrite = false;
+				grid.material.transparent = true;
+				scene.add( grid );
+			//RENDERER
+			renderer = new THREE.WebGLRenderer({ 
+				antialias: true
+			});
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.gammaOutput = true;
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			container.appendChild( renderer.domElement );
+			stats = new Stats();
+			container.appendChild( stats.dom );
+			
+			var bMaptexture = new THREE.TextureLoader().load( "img/bumpMap2.jpg" );
+			bMaptexture.wrapS = THREE.RepeatWrapping;
+			bMaptexture.wrapT = THREE.RepeatWrapping;
+			bMaptexture.repeat.set( 4, 4 );
+			
+			var tyreTexture = new THREE.TextureLoader().load( "img/tyre.png" );
+			tyreTexture.wrapS = THREE.RepeatWrapping;
+			tyreTexture.wrapT = THREE.RepeatWrapping;
+			tyreTexture.repeat.set( 4, 4 );
+			
+			var mesh,bod,glass,wheels;
+			var wireframe;
+			function initCar(){
+				var loader = new THREE.GLTFLoader();
+				loader.load('mustangGT.glb', handle_load);
+				function handle_load(gltf) {
+					mesh = gltf.scene;
+					console.log(mesh);
+					mesh.children[0].castShadow = true;
+					
+					var texture = new THREE.TextureLoader().load( 'img/ferrari_ao.png' );
+					var shadow = new THREE.Mesh(
+						new THREE.PlaneBufferGeometry( 0.7 * 4, 1.3 * 4 ).rotateX( - Math.PI / 2 ),
+						new THREE.MeshBasicMaterial( { map: texture, opacity: 0.8, transparent: true } )
+					);
+					shadow.rotation.y = 1.2;
+					shadow.position.set(0,0,-5.25);
+					//shadow.renderOrder = 2;
+					mesh.children[0].add( shadow );
+					
+					bod = mesh.children[13];
+					glass = mesh.children[12];
+					wheels;
+					
+					for(i=0; i<4;i++){
+						wheels = mesh.children[i+5];
+						wheels.children[2].material = new THREE.MeshStandardMaterial( { color: 0x000000, envMap: envMap, envMapIntensity : 0.01, metalness: 1, roughness: 0 } );
+						wheels.children[0].material = new THREE.MeshStandardMaterial( {color: 0xaaaaaa, map: tyreTexture, metalness: 0, roughness: 1, name: 'tyreFl' } );
+					}
+					console.log("here" + windowType);
+					if(windowType == 1){
+						glass.material = new THREE.MeshStandardMaterial( { color: 0xffffff, envMap: envMap, metalness: 1, roughness: 0, opacity: 0.2, transparent: true, premultipliedAlpha: true, name: 'clear' } );
+					}
+					else if(windowType ==2){
+						var rimColor = '0x' + rimHex;
+						glass.material = new THREE.MeshStandardMaterial( { color: 0x001133, envMap: envMap, envMapIntensity :0.5 , metalness: 1, roughness: 0, opacity: 0.7, transparent: true, premultipliedAlpha: true, name: 'blue' } );
+					}
+					else {
+						glass.material = new THREE.MeshStandardMaterial( { color: 0x000000, metalness: 0, roughness: 1, opacity: 0.8, transparent: true, premultipliedAlpha: true, name: 'smoked' } );
+					}
+					
+					for(var i=0;i<9;i++){
+							//bod.children[i].material = new THREE.MeshStandardMaterial( { color: bodyHex , envMap: envMapOne, metalness: 0.9, roughness: 0.2, name: 'metallic'} );
+							bod.children[i].material = new THREE.MeshStandardMaterial( { color: 0x000000, envMap: envMap, metalness: 0.9, roughness: 0.2, name: 'black' } );
+							bod.children[i].material = new THREE.MeshStandardMaterial( { color: 0x000000, envMap: envMap, envMapIntensity: 10, metalness: 1.0, roughness: 0.2, name: 'metallic'} );
+					}
+					//bod.children[7].material = new THREE.MeshStandardMaterial( { color: 0x000000, envMap: envMap, envMapIntensity: 10, metalness: 1.0, roughness: 0.2, name: 'metallic'} );
+					//console.log(mesh.children[13]); 
+					//mesh.children[0].material.envMap = envMap;
+					
+					scene.add( mesh );
+					//console.log(wireframe);
+					//wireframe.position.x = 2;
+					//mesh.position.z = -10;
+					//mesh.position.y = -2
+					//mesh.position.y = -3;
+					mesh.rotation.y = -0.5;
+				}
+			};
+			
+			function updateBody(){
+					console.log("Iam inside" + bodyHex);
+					for(var i=0;i<9;i++){
+							bod.children[i].material = new THREE.MeshStandardMaterial( { color: bodyHex , envMap: envMap, metalness: 0.9, roughness: 0.2, name: 'metallic'} );
+							//bod.children[i].material = new THREE.MeshStandardMaterial( { color: 0x000000, envMap: envMapOne, metalness: 0.9, roughness: 0.2, name: 'black' } )
+					}
+				scene.add( mesh );
+				console.log(bod);
+			}
+			
+			function updateRim(){
+				for(i=0; i<4;i++){
+						wheels = mesh.children[i+5];
+						console.log(rimHex);
+						wheels.children[2].material = new THREE.MeshStandardMaterial( { color: rimHex, envMap: envMap,envMapIntensity:0.2, metalness: 0.9, roughness: 0.1 } );
+						//wheels.children[0].material = new THREE.MeshStandardMaterial( {color: 0xaaaaaa, map: tyreTexture, metalness: 0, roughness: 1, name: 'tyreFl' } );
+				}
+				scene.add( mesh );
+				console.log(bod);
+			}
+			
+			function updateWindow(){
+				if(windowType == 1){
+						glass.material = new THREE.MeshStandardMaterial( { color: 0xffffff, envMap: envMap, metalness: 1, roughness: 0, opacity: 0.2, transparent: true, premultipliedAlpha: true, name: 'clear' } );
+					}
+					else if(windowType ==2){
+						var rimColor = '0x' + rimHex;
+						glass.material = new THREE.MeshStandardMaterial( { color: 0x001133, envMap: envMap, envMapIntensity :0.5 , metalness: 1, roughness: 0, opacity: 0.7, transparent: true, premultipliedAlpha: true, name: 'blue' } );
+					}
+					else {
+						glass.material = new THREE.MeshStandardMaterial( { color: 0x000000, metalness: 0, roughness: 1, opacity: 0.8, transparent: true, premultipliedAlpha: true, name: 'smoked' } );
+					}
+				scene.add( mesh );
+			}
+			
+			function updateGround(){
+			
+					if(floorTexture == 2)
+				turl = '/img/textures/floor2.jpg';
+			else if( floorTexture == 1)
+				turl = '/img/textures/floor1.jpg';
+			else
+				turl = '/img/textures/floor3.jpg';
+			var planeGeometry = new THREE.PlaneGeometry(500, 500, 1, 1);
+			var floortexture = new THREE.TextureLoader().load(turl);
+			floortexture.wrapS = THREE.RepeatWrapping;
+			floortexture.wrapT = THREE.RepeatWrapping;
+			floortexture.repeat.set( 50, 50 );
+			var planeMaterial = new THREE.MeshLambertMaterial( { map: floortexture } );
+			//var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
+			var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+			plane.receiveShadow = true;
+			// rotate and position the plane
+			plane.rotation.x = -0.5 * Math.PI;
+			plane.position.set(0,0,0);
+			// add the plane to the scene
+			scene.add(plane);
+			}
+			
+			function updateEnvironmentMap(){
+				var urls2 = [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ];
+				var envurl;
+				if(envType == 1)
+				envurl = '/img/envTexture/burn2/';
+				else if( envType == 2)
+				envurl = '/img/envTexture/Bright/';
+				else
+				envurl = '/img/envTexture/park/';
+				var env2loader = new THREE.CubeTextureLoader().setPath( envurl );
+				env2loader.load( urls2, function ( texture ) {
+					var pmremGenerator = new THREE.PMREMGenerator( texture );
+					pmremGenerator.update( renderer );
+					var pmremCubeUVPacker = new THREE.PMREMCubeUVPacker( pmremGenerator.cubeLods );
+					pmremCubeUVPacker.update( renderer );
+					envMap = pmremCubeUVPacker.CubeUVRenderTarget.texture;
+					pmremGenerator.dispose();
+					pmremCubeUVPacker.dispose();
+				} );
+				console.log("The environment type is" + envType);
+				window.alert("The Environment Map style has changed. Please change the Body or Rim color to apply the new style");
+				//initCar();
+			}
+			/*wireframe = new THREE.WireframeGeometry( bod.children[7].geometry );
+			var line = new THREE.LineSegments( wireframe );
+			line.material.depthTest = false;
+			line.material.opacity = 1;
+			line.material.transparent = false;
+			scene.add( line );
+			*/
+			
+			
+			//camera.lookAt(scene.position)
+			
+			//var request = new XMLHttpRequest();
+			//request.addEventListener('progress', onProgress);
+			
+			//RENDER LOOP
+			render();
+			
+			var delta = 0;
+			var prevTime = Date.now();
+			function render() {
+				delta += 0.1;
+				if (mesh) {
+					//mesh.rotation.y += 0.01;
+					//animation mesh
+					// mesh.morphTargetInfluences[ 0 ] = Math.sin(delta) * 20.0;
+				}
+				
+				if(animateControls == 1){
+					var speed = Date.now() * 0.00005;
+					camera.position.x = Math.cos(speed) * 5;
+					camera.position.z = Math.sin(speed) * 5;
+				}
+				camera.lookAt(0,0.5,0);
+				renderer.render(scene, camera);
+				requestAnimationFrame(render);
+				stats.update();
+			}
+			
+		</script>
+	</body>
+</html>
